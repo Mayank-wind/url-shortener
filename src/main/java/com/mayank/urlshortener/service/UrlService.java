@@ -15,13 +15,15 @@ public class UrlService {
     private UrlRepository repo;
 
     public String shortenUrl(String originalUrl) {
-        String shortUrl = generateShortUrl();
 
         UrlMapping mapping = new UrlMapping();
         mapping.setOriginalUrl(originalUrl);
-        mapping.setShortUrl(shortUrl);
         mapping.setCreatedAt(LocalDateTime.now());
 
+        mapping = repo.save(mapping);
+
+        String shortUrl = generateShortUrl(mapping.getId());
+        mapping.setShortUrl(shortUrl);
         repo.save(mapping);
 
         return shortUrl;
@@ -33,7 +35,17 @@ public class UrlService {
                 .orElseThrow(() -> new RuntimeException("URL not found"));
     }
 
-    private String generateShortUrl() {
-        return UUID.randomUUID().toString().substring(0, 6);
+    private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    private String generateShortUrl(Long id) {
+        StringBuilder shortUrl = new StringBuilder();
+
+        while (id > 0) {
+            int remainder = (int) (id % 62);
+            shortUrl.append(BASE62.charAt(remainder));
+            id /= 62;
+        }
+
+        return shortUrl.reverse().toString();
     }
 }
