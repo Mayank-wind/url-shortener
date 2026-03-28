@@ -16,6 +16,10 @@ public class UrlService {
 
     public String shortenUrl(String originalUrl) {
 
+        if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
+            throw new RuntimeException("Invalid URL. Must start with http:// or https://");
+        }
+
         UrlMapping mapping = new UrlMapping();
         mapping.setOriginalUrl(originalUrl);
         mapping.setCreatedAt(LocalDateTime.now());
@@ -24,15 +28,21 @@ public class UrlService {
 
         String shortUrl = generateShortUrl(mapping.getId());
         mapping.setShortUrl(shortUrl);
+
         repo.save(mapping);
 
         return shortUrl;
     }
 
     public String getOriginalUrl(String shortUrl) {
-        return repo.findByShortUrl(shortUrl)
-                .map(UrlMapping::getOriginalUrl)
+        UrlMapping mapping = repo.findByShortUrl(shortUrl)
                 .orElseThrow(() -> new RuntimeException("URL not found"));
+
+        // Increment click count
+        mapping.setClickCount(mapping.getClickCount() + 1);
+        repo.save(mapping);
+
+        return mapping.getOriginalUrl();
     }
 
     private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -47,5 +57,10 @@ public class UrlService {
         }
 
         return shortUrl.reverse().toString();
+    }
+
+    public UrlMapping getStats(String shortUrl) {
+        return repo.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new RuntimeException("URL not found"));
     }
 }

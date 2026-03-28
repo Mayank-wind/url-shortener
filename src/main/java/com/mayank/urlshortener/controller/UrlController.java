@@ -1,5 +1,6 @@
 package com.mayank.urlshortener.controller;
 
+import com.mayank.urlshortener.model.UrlMapping;
 import com.mayank.urlshortener.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,5 +28,9 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(originalUrl))
                 .build();
+    }
+    @GetMapping("/stats/{shortUrl}")
+    public UrlMapping getStats(@PathVariable String shortUrl) {
+        return service.getStats(shortUrl);
     }
 }
