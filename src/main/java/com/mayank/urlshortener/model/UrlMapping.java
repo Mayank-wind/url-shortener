@@ -15,4 +15,5 @@ public class UrlMapping {
     private String originalUrl;
     private LocalDateTime createdAt;
     private Long clickCount =0L;
+    private LocalDateTime expiresAt;
 }

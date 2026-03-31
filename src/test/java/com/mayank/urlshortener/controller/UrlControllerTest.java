@@ -31,6 +31,7 @@ class UrlControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+
     @Test
     void shouldShortenUrl() throws Exception {
         String requestBody = """
@@ -53,7 +54,7 @@ class UrlControllerTest {
     @Test
     void shouldReturnStats() throws Exception {
         when(service.getStats("b"))
-                .thenReturn(new UrlStatsResponse("b", "https://google.com", 5L, LocalDateTime.now()));
+                .thenReturn(new UrlStatsResponse("b", "https://google.com", 5L, LocalDateTime.now(), null));
 
         mockMvc.perform(get("/api/stats/b"))
                 .andExpect(status().isOk())

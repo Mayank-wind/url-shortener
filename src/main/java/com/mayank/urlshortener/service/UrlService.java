@@ -5,6 +5,7 @@ import com.mayank.urlshortener.dto.ShortenUrlResponse;
 import com.mayank.urlshortener.dto.UrlStatsResponse;
 import com.mayank.urlshortener.exception.AliasAlreadyExistsException;
 import com.mayank.urlshortener.exception.InvalidUrlException;
+import com.mayank.urlshortener.exception.UrlExpiredException;
 import com.mayank.urlshortener.exception.UrlNotFoundException;
 import com.mayank.urlshortener.model.UrlMapping;
 import com.mayank.urlshortener.repository.UrlRepository;
@@ -27,6 +28,7 @@ public class UrlService {
     public ShortenUrlResponse shortenUrl(ShortenUrlRequest request) {
         String originalUrl = request.getUrl();
         String customAlias = request.getCustomAlias();
+        LocalDateTime expiresAt = request.getExpiresAt();
 
 
         if (!isValidUrl(originalUrl)) {
@@ -46,6 +48,8 @@ public class UrlService {
             mapping.setOriginalUrl(originalUrl);
             mapping.setShortUrl(customAlias);
             mapping.setCreatedAt(LocalDateTime.now());
+            mapping.setExpiresAt(expiresAt);
+
 
             mapping = repo.save(mapping);
 
@@ -55,6 +59,8 @@ public class UrlService {
         UrlMapping mapping = new UrlMapping();
         mapping.setOriginalUrl(originalUrl);
         mapping.setCreatedAt(LocalDateTime.now());
+        mapping.setExpiresAt(expiresAt);
+
 
         mapping = repo.save(mapping);
 
@@ -79,6 +85,10 @@ public class UrlService {
 
         UrlMapping mapping = repo.findByShortUrl(shortUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found: "+shortUrl));
+
+        if (mapping.getExpiresAt() != null && mapping.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new UrlExpiredException("Short URL has expired: " + shortUrl);
+        }
 
         try {
             redisTemplate.opsForValue().set(shortUrl, mapping.getOriginalUrl());
@@ -114,7 +124,8 @@ public class UrlService {
                 mapping.getShortUrl(),
                 mapping.getOriginalUrl(),
                 mapping.getClickCount(),
-                mapping.getCreatedAt()
+                mapping.getCreatedAt(),
+                mapping.getExpiresAt()
         );
     }
 
