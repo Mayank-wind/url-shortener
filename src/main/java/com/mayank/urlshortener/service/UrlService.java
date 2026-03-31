@@ -7,7 +7,8 @@ import com.mayank.urlshortener.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 
 @Service
@@ -20,8 +21,8 @@ public class UrlService {
 
     public String shortenUrl(String originalUrl) {
 
-        if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
-            throw new InvalidUrlException("Invalid URL. Must start with http:// or https://");
+        if (!isValidUrl(originalUrl)) {
+            throw new InvalidUrlException("Invalid URL format. Please provide a valid http or https URL.");
         }
 
         UrlMapping mapping = new UrlMapping();
@@ -82,4 +83,16 @@ public class UrlService {
         return repo.findByShortUrl(shortUrl)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found:"+ shortUrl));
     }
+
+    private boolean isValidUrl(String url) {
+        try {
+            URI uri = new URI(url);
+            return uri.getScheme() != null
+                    && (uri.getScheme().equals("http") || uri.getScheme().equals("https"))
+                    && uri.getHost() != null;
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
 }
