@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class UrlService {
@@ -28,6 +29,12 @@ public class UrlService {
         if (!isValidUrl(originalUrl)) {
             throw new InvalidUrlException("Invalid URL format. Please provide a valid http or https URL.");
         }
+        Optional<UrlMapping> existingMapping = repo.findFirstByOriginalUrlOrderByIdAsc(originalUrl);
+        if (existingMapping.isPresent()) {
+            UrlMapping mapping = existingMapping.get();
+            return new ShortenUrlResponse(mapping.getShortUrl(), mapping.getOriginalUrl());
+        }
+
 
         UrlMapping mapping = new UrlMapping();
         mapping.setOriginalUrl(originalUrl);
