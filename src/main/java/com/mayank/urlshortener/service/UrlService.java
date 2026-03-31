@@ -1,23 +1,27 @@
 package com.mayank.urlshortener.service;
 
+import com.mayank.urlshortener.exception.InvalidUrlException;
+import com.mayank.urlshortener.exception.UrlNotFoundException;
 import com.mayank.urlshortener.model.UrlMapping;
 import com.mayank.urlshortener.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class UrlService {
 
     @Autowired
     private UrlRepository repo;
+    @Autowired
+    private RedisTemplate<String,String> redisTemplate;
 
     public String shortenUrl(String originalUrl) {
 
         if (!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")) {
-            throw new RuntimeException("Invalid URL. Must start with http:// or https://");
+            throw new InvalidUrlException("Invalid URL. Must start with http:// or https://");
         }
 
         UrlMapping mapping = new UrlMapping();
@@ -35,10 +39,25 @@ public class UrlService {
     }
 
     public String getOriginalUrl(String shortUrl) {
-        UrlMapping mapping = repo.findByShortUrl(shortUrl)
-                .orElseThrow(() -> new RuntimeException("URL not found"));
 
-        // Increment click count
+        try {
+            String cachedUrl = redisTemplate.opsForValue().get(shortUrl);
+            if (cachedUrl != null) {
+                return cachedUrl;
+            }
+        } catch (Exception e) {
+            System.out.println("Redis read error: " + e.getMessage());
+        }
+
+        UrlMapping mapping = repo.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new UrlNotFoundException("URL not found: "+shortUrl));
+
+        try {
+            redisTemplate.opsForValue().set(shortUrl, mapping.getOriginalUrl());
+        } catch (Exception e) {
+            System.out.println("Redis write error: " + e.getMessage());
+        }
+
         mapping.setClickCount(mapping.getClickCount() + 1);
         repo.save(mapping);
 
@@ -61,6 +80,6 @@ public class UrlService {
 
     public UrlMapping getStats(String shortUrl) {
         return repo.findByShortUrl(shortUrl)
-                .orElseThrow(() -> new RuntimeException("URL not found"));
+                .orElseThrow(() -> new UrlNotFoundException("URL not found:"+ shortUrl));
     }
 }
