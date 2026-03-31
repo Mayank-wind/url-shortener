@@ -1,5 +1,8 @@
 package com.mayank.urlshortener.service;
 
+import com.mayank.urlshortener.dto.ShortenUrlRequest;
+import com.mayank.urlshortener.dto.ShortenUrlResponse;
+import com.mayank.urlshortener.dto.UrlStatsResponse;
 import com.mayank.urlshortener.exception.InvalidUrlException;
 import com.mayank.urlshortener.exception.UrlNotFoundException;
 import com.mayank.urlshortener.model.UrlMapping;
@@ -19,7 +22,8 @@ public class UrlService {
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
 
-    public String shortenUrl(String originalUrl) {
+    public ShortenUrlResponse shortenUrl(ShortenUrlRequest request) {
+        String originalUrl = request.getUrl();
 
         if (!isValidUrl(originalUrl)) {
             throw new InvalidUrlException("Invalid URL format. Please provide a valid http or https URL.");
@@ -36,7 +40,8 @@ public class UrlService {
 
         repo.save(mapping);
 
-        return shortUrl;
+        return new ShortenUrlResponse(shortUrl, originalUrl);
+
     }
 
     public String getOriginalUrl(String shortUrl) {
@@ -79,10 +84,18 @@ public class UrlService {
         return shortUrl.reverse().toString();
     }
 
-    public UrlMapping getStats(String shortUrl) {
-        return repo.findByShortUrl(shortUrl)
-                .orElseThrow(() -> new UrlNotFoundException("URL not found:"+ shortUrl));
+    public UrlStatsResponse getStats(String shortUrl) {
+        UrlMapping mapping = repo.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new UrlNotFoundException("URL not found: " + shortUrl));
+
+        return new UrlStatsResponse(
+                mapping.getShortUrl(),
+                mapping.getOriginalUrl(),
+                mapping.getClickCount(),
+                mapping.getCreatedAt()
+        );
     }
+
 
     private boolean isValidUrl(String url) {
         try {
