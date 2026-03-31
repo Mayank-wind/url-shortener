@@ -3,6 +3,7 @@ package com.mayank.urlshortener.service;
 import com.mayank.urlshortener.dto.ShortenUrlRequest;
 import com.mayank.urlshortener.dto.ShortenUrlResponse;
 import com.mayank.urlshortener.dto.UrlStatsResponse;
+import com.mayank.urlshortener.exception.AliasAlreadyExistsException;
 import com.mayank.urlshortener.exception.InvalidUrlException;
 import com.mayank.urlshortener.exception.UrlNotFoundException;
 import com.mayank.urlshortener.model.UrlMapping;
@@ -25,6 +26,8 @@ public class UrlService {
 
     public ShortenUrlResponse shortenUrl(ShortenUrlRequest request) {
         String originalUrl = request.getUrl();
+        String customAlias = request.getCustomAlias();
+
 
         if (!isValidUrl(originalUrl)) {
             throw new InvalidUrlException("Invalid URL format. Please provide a valid http or https URL.");
@@ -34,7 +37,20 @@ public class UrlService {
             UrlMapping mapping = existingMapping.get();
             return new ShortenUrlResponse(mapping.getShortUrl(), mapping.getOriginalUrl());
         }
+        if (customAlias != null && !customAlias.isBlank()) {
+            repo.findByShortUrl(customAlias).ifPresent(existing -> {
+                throw new AliasAlreadyExistsException("Custom alias already exists: " + customAlias);
+            });
 
+            UrlMapping mapping = new UrlMapping();
+            mapping.setOriginalUrl(originalUrl);
+            mapping.setShortUrl(customAlias);
+            mapping.setCreatedAt(LocalDateTime.now());
+
+            mapping = repo.save(mapping);
+
+            return new ShortenUrlResponse(mapping.getShortUrl(), mapping.getOriginalUrl());
+        }
 
         UrlMapping mapping = new UrlMapping();
         mapping.setOriginalUrl(originalUrl);
@@ -48,7 +64,6 @@ public class UrlService {
         repo.save(mapping);
 
         return new ShortenUrlResponse(shortUrl, originalUrl);
-
     }
 
     public String getOriginalUrl(String shortUrl) {
