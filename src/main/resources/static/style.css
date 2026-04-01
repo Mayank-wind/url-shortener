@@ -160,4 +160,12 @@ button:hover {
 .dashboard button {
     margin-top: 0;
 }
+.delete-btn {
+    margin-top: 10px;
+    background: #dc2626;
+}
+
+.delete-btn:hover {
+    background: #b91c1c;
+}
 

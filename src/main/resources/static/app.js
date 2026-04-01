@@ -30,6 +30,7 @@ async function loadUrls() {
                     <small>Clicks: ${item.clickCount}</small>
                     <small>Created: ${item.createdAt || "N/A"}</small>
                     <small>Expires: ${item.expiresAt || "Never"}</small>
+                    <button class="delete-btn" onclick="deleteUrl('${item.shortUrl}')">Delete</button>
                 </div>
             `;
         }).join("");
@@ -37,6 +38,36 @@ async function loadUrls() {
         urlList.innerHTML = `<p>${error.message}</p>`;
     }
 }
+
+async function deleteUrl(shortUrl) {
+    const confirmed = window.confirm(`Delete short URL "${shortUrl}"?`);
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/${shortUrl}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            let message = "Failed to delete URL";
+            try {
+                const data = await response.json();
+                message = data.message || message;
+            } catch (e) {
+                // ignore JSON parse issue
+            }
+            throw new Error(message);
+        }
+
+        loadUrls();
+    } catch (error) {
+        errorBox.textContent = error.message;
+        errorBox.classList.remove("hidden");
+    }
+}
+
 loadUrlsBtn.addEventListener("click", loadUrls);
 
 

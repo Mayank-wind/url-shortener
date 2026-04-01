@@ -49,5 +49,11 @@ public class UrlController {
     public List<UrlListResponse> getAllUrls() {
         return service.getAllUrls();
     }
+    @DeleteMapping("/{shortUrl}")
+    public ResponseEntity<Void> deleteUrl(@PathVariable String shortUrl) {
+        service.deleteUrl(shortUrl);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

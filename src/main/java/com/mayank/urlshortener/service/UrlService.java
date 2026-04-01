@@ -153,6 +153,19 @@ public class UrlService {
                 ))
                 .toList();
     }
+    public void deleteUrl(String shortUrl) {
+        UrlMapping mapping = repo.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new UrlNotFoundException("URL not found: " + shortUrl));
+
+        repo.delete(mapping);
+
+        try {
+            redisTemplate.delete(shortUrl);
+        } catch (Exception e) {
+            System.out.println("Redis delete error: " + e.getMessage());
+        }
+    }
+
 
 
 }
