@@ -39,6 +39,7 @@ async function loadUrls() {
                     <small>Clicks: ${item.clickCount}</small>
                     <small>Created: ${item.createdAt || "N/A"}</small>
                     <small>Expires: ${item.expiresAt || "Never"}</small>
+                    <small>Last Accessed: ${item.lastAccessedAt || "Never"}</small>
                     <div class="expiration-editor">
                         <input type="datetime-local" id="exp-${item.shortUrl}">
                         <button type="button" class="update-btn" onclick="updateExpiration('${item.shortUrl}')">Update Expiration</button>

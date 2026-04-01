@@ -13,5 +13,6 @@ public class UrlStatsResponse {
     private Long clickCount;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
+    private LocalDateTime lastAccessedAt;
 
 }

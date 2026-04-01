@@ -96,8 +96,8 @@ public class UrlService {
         }
 
         mapping.setClickCount(mapping.getClickCount() + 1);
+        mapping.setLastAccessedAt(LocalDateTime.now());
         repo.save(mapping);
-
         return mapping.getOriginalUrl();
     }
 
@@ -124,7 +124,8 @@ public class UrlService {
                 mapping.getOriginalUrl(),
                 mapping.getClickCount(),
                 mapping.getCreatedAt(),
-                mapping.getExpiresAt()
+                mapping.getExpiresAt(),
+                mapping.getLastAccessedAt()
         );
     }
 
@@ -146,7 +147,8 @@ public class UrlService {
                         mapping.getOriginalUrl(),
                         mapping.getClickCount(),
                         mapping.getCreatedAt(),
-                        mapping.getExpiresAt()
+                        mapping.getExpiresAt(),
+                        mapping.getLastAccessedAt()
                 ))
                 .toList();
     }
