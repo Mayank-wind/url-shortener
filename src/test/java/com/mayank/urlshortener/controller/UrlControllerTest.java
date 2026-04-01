@@ -58,7 +58,7 @@ class UrlControllerTest {
     @Test
     void shouldReturnStats() throws Exception {
         when(service.getStats("b"))
-                .thenReturn(new UrlStatsResponse("b", "https://google.com", 5L, LocalDateTime.now(), null));
+                .thenReturn(new UrlStatsResponse("b", "https://google.com", 5L, LocalDateTime.now(), null,null));
 
         mockMvc.perform(get("/api/stats/b"))
                 .andExpect(status().isOk())

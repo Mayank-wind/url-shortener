@@ -201,6 +201,30 @@ button:hover {
 
 .update-btn:hover {
     background: #6d28d9;
-}
+}.qr-btn {
+     margin-left: 10px;
+     padding: 6px 10px;
+     font-size: 0.85rem;
+     border-radius: 8px;
+     background: #ea580c;
+ }
+
+ .qr-btn:hover {
+     background: #c2410c;
+ }
+
+ .qr-container {
+     margin-top: 12px;
+ }
+
+ .qr-container img {
+     width: 160px;
+     height: 160px;
+     border: 1px solid var(--border);
+     border-radius: 10px;
+     background: white;
+     padding: 8px;
+ }
+
 
 

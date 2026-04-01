@@ -35,7 +35,9 @@ async function loadUrls() {
                     <div>
                         Short: <a href="${shortLink}" target="_blank">${shortLink}</a>
                         <button type="button" class="copy-btn" onclick="copyToClipboard('${shortLink}', this)">Copy</button>
+                        <button type="button" class="qr-btn" onclick="toggleQr('qr-${item.shortUrl}', '${shortLink}')">Show QR</button>
                     </div>
+                    <div id="qr-${item.shortUrl}" class="qr-container hidden"></div>
                     <small>Clicks: ${item.clickCount}</small>
                     <small>Created: ${item.createdAt || "N/A"}</small>
                     <small>Expires: ${item.expiresAt || "Never"}</small>
@@ -93,6 +95,23 @@ async function copyToClipboard(text, button) {
         errorBox.classList.remove("hidden");
     }
 }
+function toggleQr(containerId, shortLink) {
+    const container = document.getElementById(containerId);
+
+    if (!container.classList.contains("hidden")) {
+        container.classList.add("hidden");
+        container.innerHTML = "";
+        return;
+    }
+
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(shortLink)}`;
+
+    container.innerHTML = `
+        <img src="${qrUrl}" alt="QR Code for short URL">
+    `;
+    container.classList.remove("hidden");
+}
+
 async function updateExpiration(shortUrl) {
     const input = document.getElementById(`exp-${shortUrl}`);
     const expiresAt = input.value;
@@ -175,7 +194,10 @@ form.addEventListener("submit", async (event) => {
             Original URL: ${data.originalUrl}<br>
             Short URL: <a href="${shortLink}" target="_blank">${shortLink}</a>
             <button type="button" class="copy-btn" onclick="copyToClipboard('${shortLink}', this)">Copy</button>
+            <button type="button" class="qr-btn" onclick="toggleQr('result-qr', '${shortLink}')">Show QR</button>
+            <div id="result-qr" class="qr-container hidden"></div>
         `;
+
         resultBox.classList.remove("hidden");
         form.reset();
         loadUrls();
