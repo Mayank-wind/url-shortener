@@ -3,6 +3,7 @@ package com.mayank.urlshortener.controller;
 
 import com.mayank.urlshortener.dto.ShortenUrlResponse;
 import com.mayank.urlshortener.dto.UrlStatsResponse;
+import com.mayank.urlshortener.service.RateLimitService;
 import com.mayank.urlshortener.service.UrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ class UrlControllerTest {
 
     @MockitoBean
     private UrlService service;
+    @MockitoBean
+    private RateLimitService rateLimitService;
+
 
     @Autowired
     private ObjectMapper objectMapper;
