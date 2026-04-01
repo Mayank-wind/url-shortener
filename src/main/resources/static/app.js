@@ -3,6 +3,7 @@ const resultBox = document.getElementById("result");
 const errorBox = document.getElementById("error");
 const loadUrlsBtn = document.getElementById("loadUrlsBtn");
 const urlList = document.getElementById("urlList");
+const searchInput = document.getElementById("searchInput");
 
 async function loadUrls() {
     urlList.innerHTML = "Loading...";
@@ -10,17 +11,22 @@ async function loadUrls() {
     try {
         const response = await fetch("/api/urls");
         const data = await response.json();
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const filteredData = data.filter(item =>
+            item.shortUrl.toLowerCase().includes(searchTerm) ||
+            item.originalUrl.toLowerCase().includes(searchTerm)
+        );
 
         if (!response.ok) {
             throw new Error("Failed to load URLs");
         }
 
-        if (data.length === 0) {
+        if (filteredData.length === 0) {
             urlList.innerHTML = "<p>No URLs found yet.</p>";
             return;
         }
 
-        urlList.innerHTML = data.map(item => {
+        urlList.innerHTML = filteredData.map(item => {
             const shortLink = `${window.location.origin}/api/${item.shortUrl}`;
             return `
                 <div class="url-item">
@@ -142,4 +148,6 @@ form.addEventListener("submit", async (event) => {
     }
 });
 loadUrls();
+searchInput.addEventListener("input", loadUrls);
+
 

@@ -179,4 +179,9 @@ button:hover {
 .copy-btn:hover {
     background: #1d4ed8;
 }
+#searchInput {
+    margin-top: 8px;
+    margin-bottom: 12px;
+}
+
 
