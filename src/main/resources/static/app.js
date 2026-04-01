@@ -26,7 +26,10 @@ async function loadUrls() {
                 <div class="url-item">
                     <strong>${item.shortUrl}</strong>
                     <div>Original: ${item.originalUrl}</div>
-                    <div>Short: <a href="${shortLink}" target="_blank">${shortLink}</a></div>
+                    <div>
+                        Short: <a href="${shortLink}" target="_blank">${shortLink}</a>
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('${shortLink}', this)">Copy</button>
+                    </div>
                     <small>Clicks: ${item.clickCount}</small>
                     <small>Created: ${item.createdAt || "N/A"}</small>
                     <small>Expires: ${item.expiresAt || "Never"}</small>
@@ -67,6 +70,20 @@ async function deleteUrl(shortUrl) {
         errorBox.classList.remove("hidden");
     }
 }
+async function copyToClipboard(text, button) {
+    try {
+        await navigator.clipboard.writeText(text);
+        const originalText = button.textContent;
+        button.textContent = "Copied!";
+        setTimeout(() => {
+            button.textContent = originalText;
+        }, 1500);
+    } catch (error) {
+        errorBox.textContent = "Failed to copy URL";
+        errorBox.classList.remove("hidden");
+    }
+}
+
 
 loadUrlsBtn.addEventListener("click", loadUrls);
 
@@ -114,6 +131,7 @@ form.addEventListener("submit", async (event) => {
             <strong>Short URL created successfully.</strong><br>
             Original URL: ${data.originalUrl}<br>
             Short URL: <a href="${shortLink}" target="_blank">${shortLink}</a>
+            <button type="button" class="copy-btn" onclick="copyToClipboard('${shortLink}', this)">Copy</button>
         `;
         resultBox.classList.remove("hidden");
         form.reset();
