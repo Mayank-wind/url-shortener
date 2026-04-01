@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="page">
+    <div class="card">
+        <h1>URL Shortener</h1>
+        <p class="subtitle">Create short links with optional custom aliases and expiration.</p>
+
+        <form id="shortenForm">
+            <label for="url">Original URL</label>
+            <input type="text" id="url" name="url" placeholder="https://example.com" required>
+
+            <label for="customAlias">Custom Alias (optional)</label>
+            <input type="text" id="customAlias" name="customAlias" placeholder="my-link">
+
+            <label for="expiresAt">Expiration (optional)</label>
+            <input type="datetime-local" id="expiresAt" name="expiresAt">
+
+            <button type="submit">Shorten URL</button>
+        </form>
+
+        <div id="result" class="result hidden"></div>
+        <div id="error" class="error hidden"></div>
+    </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
