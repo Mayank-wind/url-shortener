@@ -2,6 +2,7 @@ package com.mayank.urlshortener.service;
 
 import com.mayank.urlshortener.dto.ShortenUrlRequest;
 import com.mayank.urlshortener.dto.ShortenUrlResponse;
+import com.mayank.urlshortener.dto.UrlListResponse;
 import com.mayank.urlshortener.dto.UrlStatsResponse;
 import com.mayank.urlshortener.exception.AliasAlreadyExistsException;
 import com.mayank.urlshortener.exception.InvalidUrlException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -140,5 +142,17 @@ public class UrlService {
             return false;
         }
     }
+    public List<UrlListResponse> getAllUrls() {
+        return repo.findAll().stream()
+                .map(mapping -> new UrlListResponse(
+                        mapping.getShortUrl(),
+                        mapping.getOriginalUrl(),
+                        mapping.getClickCount(),
+                        mapping.getCreatedAt(),
+                        mapping.getExpiresAt()
+                ))
+                .toList();
+    }
+
 
 }

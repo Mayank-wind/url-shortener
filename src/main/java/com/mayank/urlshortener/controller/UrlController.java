@@ -2,6 +2,7 @@ package com.mayank.urlshortener.controller;
 
 import com.mayank.urlshortener.dto.ShortenUrlRequest;
 import com.mayank.urlshortener.dto.ShortenUrlResponse;
+import com.mayank.urlshortener.dto.UrlListResponse;
 import com.mayank.urlshortener.dto.UrlStatsResponse;
 import com.mayank.urlshortener.service.RateLimitService;
 import com.mayank.urlshortener.service.UrlService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -43,4 +45,9 @@ public class UrlController {
     public UrlStatsResponse getStats(@PathVariable String shortUrl) {
         return service.getStats(shortUrl);
     }
+    @GetMapping("/urls")
+    public List<UrlListResponse> getAllUrls() {
+        return service.getAllUrls();
+    }
+
 }

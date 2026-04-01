@@ -118,3 +118,46 @@ button:hover {
     color: inherit;
     font-weight: 700;
 }
+.dashboard {
+    margin-top: 28px;
+}
+
+.dashboard h2 {
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.url-list {
+    margin-top: 16px;
+    display: grid;
+    gap: 12px;
+}
+
+.url-item {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.url-item strong {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.url-item a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.url-item small {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+}
+
+.dashboard button {
+    margin-top: 0;
+}
+

@@ -1,6 +1,44 @@
 const form = document.getElementById("shortenForm");
 const resultBox = document.getElementById("result");
 const errorBox = document.getElementById("error");
+const loadUrlsBtn = document.getElementById("loadUrlsBtn");
+const urlList = document.getElementById("urlList");
+
+async function loadUrls() {
+    urlList.innerHTML = "Loading...";
+
+    try {
+        const response = await fetch("/api/urls");
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error("Failed to load URLs");
+        }
+
+        if (data.length === 0) {
+            urlList.innerHTML = "<p>No URLs found yet.</p>";
+            return;
+        }
+
+        urlList.innerHTML = data.map(item => {
+            const shortLink = `${window.location.origin}/api/${item.shortUrl}`;
+            return `
+                <div class="url-item">
+                    <strong>${item.shortUrl}</strong>
+                    <div>Original: ${item.originalUrl}</div>
+                    <div>Short: <a href="${shortLink}" target="_blank">${shortLink}</a></div>
+                    <small>Clicks: ${item.clickCount}</small>
+                    <small>Created: ${item.createdAt || "N/A"}</small>
+                    <small>Expires: ${item.expiresAt || "Never"}</small>
+                </div>
+            `;
+        }).join("");
+    } catch (error) {
+        urlList.innerHTML = `<p>${error.message}</p>`;
+    }
+}
+loadUrlsBtn.addEventListener("click", loadUrls);
+
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -48,8 +86,11 @@ form.addEventListener("submit", async (event) => {
         `;
         resultBox.classList.remove("hidden");
         form.reset();
+        loadUrls();
     } catch (error) {
         errorBox.textContent = error.message;
         errorBox.classList.remove("hidden");
     }
 });
+loadUrls();
+
