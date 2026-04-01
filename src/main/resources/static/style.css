@@ -225,6 +225,10 @@ button:hover {
      background: white;
      padding: 8px;
  }
+ #sortSelect {
+     margin-bottom: 12px;
+ }
+
 
 
 

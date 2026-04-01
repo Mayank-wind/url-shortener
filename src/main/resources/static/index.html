@@ -30,6 +30,12 @@
         <div class="dashboard">
             <h2>Saved URLs</h2>
             <input type="text" id="searchInput" placeholder="Search by short URL or original URL">
+            <select id="sortSelect">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="mostClicked">Most Clicked</option>
+                <option value="leastClicked">Least Clicked</option>
+            </select>
             <button type="button" id="loadUrlsBtn">Refresh List</button>
             <div id="urlList" class="url-list"></div>
         </div>

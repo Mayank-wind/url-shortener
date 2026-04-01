@@ -4,6 +4,7 @@ const errorBox = document.getElementById("error");
 const loadUrlsBtn = document.getElementById("loadUrlsBtn");
 const urlList = document.getElementById("urlList");
 const searchInput = document.getElementById("searchInput");
+const sortSelect = document.getElementById("sortSelect");
 
 async function loadUrls() {
     urlList.innerHTML = "Loading...";
@@ -16,6 +17,23 @@ async function loadUrls() {
             item.shortUrl.toLowerCase().includes(searchTerm) ||
             item.originalUrl.toLowerCase().includes(searchTerm)
         );
+        const sortValue = sortSelect.value;
+
+        filteredData.sort((a, b) => {
+            if (sortValue === "newest") {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            }
+            if (sortValue === "oldest") {
+                return new Date(a.createdAt) - new Date(b.createdAt);
+            }
+            if (sortValue === "mostClicked") {
+                return b.clickCount - a.clickCount;
+            }
+            if (sortValue === "leastClicked") {
+                return a.clickCount - b.clickCount;
+            }
+            return 0;
+        });
 
         if (!response.ok) {
             throw new Error("Failed to load URLs");
@@ -208,5 +226,7 @@ form.addEventListener("submit", async (event) => {
 });
 loadUrls();
 searchInput.addEventListener("input", loadUrls);
+sortSelect.addEventListener("change", loadUrls);
+
 
 
