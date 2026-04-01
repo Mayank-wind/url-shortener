@@ -183,5 +183,24 @@ button:hover {
     margin-top: 8px;
     margin-bottom: 12px;
 }
+.expiration-editor {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.expiration-editor input {
+    flex: 1;
+    min-width: 180px;
+}
+
+.update-btn {
+    background: #7c3aed;
+}
+
+.update-btn:hover {
+    background: #6d28d9;
+}
 
 

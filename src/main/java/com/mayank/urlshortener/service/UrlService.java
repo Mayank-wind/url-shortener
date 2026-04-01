@@ -1,9 +1,6 @@
 package com.mayank.urlshortener.service;
 
-import com.mayank.urlshortener.dto.ShortenUrlRequest;
-import com.mayank.urlshortener.dto.ShortenUrlResponse;
-import com.mayank.urlshortener.dto.UrlListResponse;
-import com.mayank.urlshortener.dto.UrlStatsResponse;
+import com.mayank.urlshortener.dto.*;
 import com.mayank.urlshortener.exception.AliasAlreadyExistsException;
 import com.mayank.urlshortener.exception.InvalidUrlException;
 import com.mayank.urlshortener.exception.UrlExpiredException;
@@ -165,7 +162,12 @@ public class UrlService {
             System.out.println("Redis delete error: " + e.getMessage());
         }
     }
+    public void updateExpiration(String shortUrl, UpdateExpirationRequest request) {
+        UrlMapping mapping = repo.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new UrlNotFoundException("URL not found: " + shortUrl));
 
-
+        mapping.setExpiresAt(request.getExpiresAt());
+        repo.save(mapping);
+    }
 
 }

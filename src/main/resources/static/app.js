@@ -39,9 +39,12 @@ async function loadUrls() {
                     <small>Clicks: ${item.clickCount}</small>
                     <small>Created: ${item.createdAt || "N/A"}</small>
                     <small>Expires: ${item.expiresAt || "Never"}</small>
+                    <div class="expiration-editor">
+                        <input type="datetime-local" id="exp-${item.shortUrl}">
+                        <button type="button" class="update-btn" onclick="updateExpiration('${item.shortUrl}')">Update Expiration</button>
+                    </div>
                     <button class="delete-btn" onclick="deleteUrl('${item.shortUrl}')">Delete</button>
-                </div>
-            `;
+                </div> `;
         }).join("");
     } catch (error) {
         urlList.innerHTML = `<p>${error.message}</p>`;
@@ -89,11 +92,44 @@ async function copyToClipboard(text, button) {
         errorBox.classList.remove("hidden");
     }
 }
+async function updateExpiration(shortUrl) {
+    const input = document.getElementById(`exp-${shortUrl}`);
+    const expiresAt = input.value;
 
+    if (!expiresAt) {
+        errorBox.textContent = "Please select an expiration date/time.";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/${shortUrl}/expiration`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ expiresAt })
+        });
+
+        if (!response.ok) {
+            let message = "Failed to update expiration";
+            try {
+                const data = await response.json();
+                message = data.message || message;
+            } catch (e) {
+                // ignore parse issue
+            }
+            throw new Error(message);
+        }
+
+        loadUrls();
+    } catch (error) {
+        errorBox.textContent = error.message;
+        errorBox.classList.remove("hidden");
+    }
+}
 
 loadUrlsBtn.addEventListener("click", loadUrls);
-
-
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 

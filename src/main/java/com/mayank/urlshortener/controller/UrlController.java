@@ -1,9 +1,6 @@
 package com.mayank.urlshortener.controller;
 
-import com.mayank.urlshortener.dto.ShortenUrlRequest;
-import com.mayank.urlshortener.dto.ShortenUrlResponse;
-import com.mayank.urlshortener.dto.UrlListResponse;
-import com.mayank.urlshortener.dto.UrlStatsResponse;
+import com.mayank.urlshortener.dto.*;
 import com.mayank.urlshortener.service.RateLimitService;
 import com.mayank.urlshortener.service.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,6 +51,12 @@ public class UrlController {
         service.deleteUrl(shortUrl);
         return ResponseEntity.noContent().build();
     }
-
+    @PutMapping("/{shortUrl}/expiration")
+    public ResponseEntity<Void> updateExpiration(
+            @PathVariable String shortUrl,
+            @RequestBody UpdateExpirationRequest request) {
+        service.updateExpiration(shortUrl, request);
+        return ResponseEntity.noContent().build();
+    }
 
 }
